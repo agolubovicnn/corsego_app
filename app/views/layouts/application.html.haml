@@ -1,0 +1,26 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
+    %meta{:content => "online education, course platform, video tutorials, udemy clone", :name => "keywords"}/
+    %meta{:content => "Online Learning and Skill sharing platform", :name => "description"}/
+    %meta{:content => "Yaroslav Shmarov", :name => "author"}/
+    = favicon_link_tag 'logo-bootstrap.png'
+    /%title Corsego
+    %title
+      = content_for?(:title) ? yield(:title) : "Corsego"
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    - if Rails.env.production?
+      = render 'layouts/google_analytics'
+  %body
+    = render 'layouts/header'
+    = render 'layouts/messages'
+    .container
+      %p
+      = yield
+    = render 'layouts/footer'

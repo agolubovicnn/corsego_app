@@ -1,0 +1,32 @@
+- content_for :title do
+  Corsego 
+  |
+  Course
+  = @course.title
+  |
+  Editing Lesson
+  = @lesson.title
+
+= link_to 'Courses', courses_path
+|
+.fa.fa-graduation-cap
+= link_to course_path(@course) do
+  = @course.title
+|
+.fa.fa-check-square
+= link_to course_lesson_path(@course, @lesson) do
+  = @lesson.title
+|
+= link_to 'Edit Lesson', edit_course_lesson_path(@course, @lesson)
+
+.card.shadow
+  .card-header
+    %h3
+      .far.fa-check-square
+      Editing lesson
+  .card-body
+    = render 'form'
+  .card-footer
+    = link_to 'Show lesson', course_lesson_path(@course, @lesson)
+    \|
+    = link_to 'Back to course', course_path(@lesson.course)

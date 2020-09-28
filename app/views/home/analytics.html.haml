@@ -1,0 +1,34 @@
+- content_for :title do
+  Corsego 
+  \| 
+  Analytics
+
+%h4.text-center
+  New users per day
+.card.shadow
+  .card-body
+    /= line_chart @users.group_by_day(:created_at).count
+    = line_chart charts_users_per_day_path
+
+%h4.text-center
+  New enrollments per day
+.card.shadow
+  .card-body
+    /= column_chart @enrollments.group_by_day(:created_at).count
+    = column_chart charts_enrollments_per_day_path
+
+%h4.text-center
+  Most enrolled courses
+
+.card.shadow
+  .card-body
+    /= pie_chart @courses.group(:enrollments_count).count
+    /= pie_chart @enrollments.joins(:course).group(:'courses.title').count
+    /= bar_chart @enrollments.joins(:course).group(:'courses.title').count
+    = bar_chart charts_course_popularity_path
+
+%h4.text-center
+  Most paid courses
+.card.shadow
+  .card-body
+    = bar_chart charts_money_makers_path

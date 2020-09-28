@@ -1,0 +1,90 @@
+- content_for :title do
+  Corsego 
+  |
+  = controller_name.humanize
+  = action_name.humanize
+
+%h3
+  .text-center
+    .fa.fa-lock-open
+    = controller_name.humanize + ":"
+    = action_name.humanize
+    .badge.badge-info
+      = @enrollments.count
+%p
+
+= search_form_for @q, url: @ransack_path do |f|
+  = f.search_field :user_email_cont, placeholder: 'user email'
+  = f.search_field :course_title_cont, placeholder: 'course title'
+  = f.search_field :course_user_email_cont, placeholder: 'teacher'
+  = f.search_field :price_eq, placeholder: 'price'
+  = f.search_field :rating_eq, placeholder: 'rating'
+  = f.submit
+= link_to 'refresh', @ransack_path
+
+.table-responsive
+  %table.table.table-bordered.table-striped.table-sm.table-hover
+    %thead
+      %tr
+        /%th ID
+        %th
+          = sort_link(@q, :user_email, "User")
+          /.fa.fa-user
+          /User
+        %th
+          = sort_link(@q, :created_at)
+          /.fa.fa-clock
+          /.fa.fa-lock-open
+          /bought
+        %th
+          = sort_link(@q, :course_title, "Course")
+          /.fa.fa-graduation-cap
+          /Course
+        %th Teacher
+        %th 
+          = sort_link(@q, :price)
+          /.fa.fa-dollar-sign
+          /Price
+        %th 
+          .text-warning.fa.fa-clock
+          = sort_link(@q, :updated_at, 'Reviewed')
+          /Reviewed on
+        %th 
+          .text-warning.fa.fa-star
+          = sort_link(@q, :rating)
+        %th 
+          .text-warning.fa.fa-comment
+          Review
+        %th Progress
+        %th Certificate
+        %th
+        %th
+        %th
+  
+    %tbody
+      - @enrollments.each do |enrollment|
+        %tr
+          /%td= enrollment.id
+          %td
+            - if enrollment.user.present?
+              = link_to enrollment.user.email, user_path(enrollment.user)
+          %td= enrollment.created_at.strftime("%d/%m/%Y, %H:%M")
+          %td= link_to enrollment.course, course_path(enrollment.course)
+          %td= link_to enrollment.course.user, user_path(enrollment.course.user)
+          %td= number_to_currency(enrollment.price)
+          %td
+            - if enrollment.rating.present?
+              = enrollment.updated_at.strftime("%d/%m/%Y, %H:%M")
+          %td= enrollment.rating
+          %td= enrollment.review
+          %td= number_to_percentage(enrollment.course.progress(enrollment.user), precision: 0)
+          %td= link_to 'PDF', certificate_enrollment_path(enrollment, format: :pdf)
+          %td= link_to 'See Review', enrollment
+          %td
+            - if policy(enrollment).edit?
+              = link_to 'Add Review', edit_enrollment_path(enrollment)
+          %td
+            - if policy(enrollment).destroy?
+              = link_to 'Delete Enrollment', enrollment, method: :delete, data: { confirm: 'Are you sure?' }
+!= pagy_bootstrap_nav(@pagy)
+%br

@@ -1,0 +1,14 @@
+- content_for :title do
+  Corsego 
+  \| 
+  New course
+
+.card.shadow
+  .card-header
+    %h3
+      .fa.fa-graduation-cap
+      New course
+  .card-body
+    = render 'form'
+  .card-footer
+    = link_to 'Cancel', courses_path

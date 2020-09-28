@@ -1,0 +1,192 @@
+- content_for :title do
+  Corsego 
+  \| 
+  Online Courses - Learn Anything, On Your Schedule
+
+:css
+  .parallax { 
+    /* The image used */
+    background-image: url("https://i.imgur.com/bldd1wu.jpg");
+    /* Set a specific height */
+    height: auto; 
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+  }
+  / parallax
+
+.jumbotron.shadow.parallax
+  %h1.text-shadow
+    %b What do you want to learn today?
+  
+  .p-4
+
+  - if current_user
+    .p-3
+    = search_form_for @ransack_courses, as: :courses_search, url: courses_path do |f|
+      .input-group
+        = f.search_field :title_cont, class: 'form-control-lg', style: 'float: left; width: 200px; ', placeholder: 'Find a course', :autocomplete => :off
+        %span.input-group-append
+          %button.btn.btn-primary.btn-lg{:type => "submit"}
+            %span.fa.fa-search{"aria-hidden" => "true"}
+    .p-2
+  - else
+    %h3.text-shadow Join to access all the courses
+    .p-2
+    = link_to 'Register', new_user_registration_path, class: 'btn btn-custom-purple btn-lg'
+    = link_to 'Login', new_user_session_path, class: 'btn btn-custom-purple btn-lg'
+    .row.mt-1
+    = link_to user_google_oauth2_omniauth_authorize_path, class: 'btn btn-danger btn-lg mr-1' do
+      Continue with
+      .fab.fa-google
+    .row.mt-1
+    = link_to user_github_omniauth_authorize_path, class: 'btn btn-dark btn-lg mr-1' do
+      Continue with
+      .fab.fa-github
+    .row.mt-1
+    = link_to user_facebook_omniauth_authorize_path, class: 'btn btn-primary btn-lg mr-1' do
+      Continue with
+      .fab.fa-facebook
+
+  /.form-inline.my-2.my-lg-0
+  /  = form_tag(courses_path, method: :get) do
+  /    .input-group
+  /      = text_field_tag :title, params[:title], autocomplete: 'off', placeholder: "Find a course", class: 'form-control-sm'
+  /      %span.input-group-append
+  /        %button.btn.btn-primary.btn-sm{:type => "submit"}
+  /          %span.fa.fa-search{"aria-hidden" => "true"}
+
+.card-group.shadow
+  .card
+    .card-body
+      %h1
+        .fa.fa-graduation-cap
+      = pluralize(Course.approved.published.count, 'online courses')
+      /= Course.count
+      /online courses
+      .row
+      %small Explore a variety of fresh topics
+  .card
+    .card-body
+      %h1
+        .fa.fa-chalkboard-teacher
+        /.fa.fa-brain
+      = pluralize(Course.distinct.count(:user_id), 'expert instructors')
+      /= Course.distinct.count(:user_id)
+      /expert instructors
+      .row
+      %small Find the right instructor for you
+  .card
+    .card-body
+      %h1
+        .fa.fa-user-graduate
+      = pluralize(User.count, 'active learners')
+      /= User.count
+      /active learners
+      .row
+      %small Join the knowledge sharing community
+  .card
+    .card-body
+      %h1
+        .fa.fa-infinity
+      Lifetime access
+      .row
+      %small Learn on your schedule
+
+%p
+
+%h2 
+  .fa.fa-tags
+  Top Categories
+- @popular_tags.each do |tag|
+  = link_to courses_path(courses_search: {course_tags_tag_id_eq: tag.id}) do
+    .mt-1.btn.btn-info
+      = tag.name
+      %span.badge.badge-light
+        = tag.course_tags_count
+%hr
+
+- if current_user 
+  - if current_user.enrollments.any?
+    %h2
+      .fa.fa-user-graduate
+      = link_to 'Continue learning ', learning_courses_path
+    .row
+      - @learning_courses.each do |course|
+        .col-md-6
+          = render 'courses/course', course: course
+          %p
+    %hr
+  - if current_user.courses.any?
+    %h2
+      .fa.fa-chalkboard-teacher
+      = link_to 'You are teaching', teaching_courses_path
+    .row
+      - @teaching_courses.each do |course|
+        .col-md-6
+          = render 'courses/course', course: course
+          %p
+    %hr
+
+%h2
+  .fa.fa-chart-line
+  = link_to 'Popular courses', courses_path(courses_search: {s: 'enrollments_count desc'})
+.row
+  - @popular.each do |course|
+    .col-md-6
+      = render 'courses/course', course: course
+      %p
+%hr
+%h2 
+  .fa.fa-star
+  = link_to 'Top rated courses', courses_path(courses_search: {s: 'average_rating desc'})
+.row
+  - @top_rated.each do |course|
+    .col-md-6
+      = render 'courses/course', course: course
+      %p
+%hr
+%h2 
+  .fa.fa-clock
+  = link_to 'Latest courses', courses_path(courses_search: {s: 'created_at desc'})
+.row
+  - @latest.each do |course|
+    .col-md-6
+      = render 'courses/course', course: course
+      %p
+%hr
+
+%h2 
+  .fa.fa-comment
+  What our students have to say
+.row
+  - @latest_good_reviews.each do |enrollment|
+    .col-md-6
+      = render 'enrollments/enrollment', enrollment: enrollment
+      %p
+%br
+.card-group.shadow
+  .card
+    .card-body
+      %b
+        .fa.fa-clock
+        Go at your own pace
+      %small
+        Enjoy lifetime access to courses on Udemy’s website and app
+  .card
+    .card-body
+      %b
+        .far.fa-check-circle
+        Learn from industry experts
+      %small
+        Select from top instructors around the world
+  .card
+    .card-body
+      %b
+        .far.fa-play-circle
+        Find video courses on almost any topic
+      %small
+        Build your library for your career and personal growth
